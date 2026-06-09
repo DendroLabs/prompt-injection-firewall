@@ -2,6 +2,27 @@
 
 MCP server that provides sanitized web access for LLMs. All web content passes through a non-LLM pattern-matching sanitizer before reaching the model's context. Detects and strips prompt injection attacks, suspicious Unicode, homoglyphs, encoded payloads, and data exfiltration attempts.
 
+## Why Not Use an LLM to Filter?
+
+The obvious question: why use regex heuristics instead of asking an LLM to detect prompt injection? The answer is fundamental to the threat model.
+
+**The filter and the target are the same attack surface.** If you use an LLM to scan web content for prompt injection, the injected payload is now inside the filter LLM's context — which is exactly where the attacker wants it. A sufficiently clever injection can compromise the filter itself, causing it to report "clean" on malicious content. You've just added latency and cost without adding security.
+
+This isn't theoretical. Research on LLM-as-judge systems shows they're vulnerable to the same adversarial techniques they're trying to detect: instruction overrides, role hijacking, and context manipulation all work on the judge LLM too. An attacker who can craft a payload that fools GPT-4 can likely craft one that fools GPT-4-as-filter, because the same linguistic patterns that constitute "understanding instructions" also constitute "being vulnerable to instruction injection."
+
+**PIF's approach: deterministic pattern matching outside the LLM.**
+
+The sanitizer runs zero LLM calls. It uses compiled regex patterns, Unicode analysis, and structural heuristics — none of which can be "convinced" by clever wording. A regex either matches or it doesn't. This means:
+
+- **No prompt injection can disable the filter.** The sanitizer doesn't process natural language instructions — it matches byte patterns.
+- **No latency or cost per scan.** Regex runs in microseconds, not seconds. No API calls, no token costs.
+- **No model dependency.** Works offline, works with any LLM client, works in air-gapped environments.
+- **Auditable.** Every pattern is a readable regex with a severity and category. You can review exactly what it catches and why.
+
+The tradeoff is that regex heuristics won't catch novel, never-before-seen injection techniques the way a sufficiently capable LLM might. PIF accepts this tradeoff because a filter that can be defeated by the same attack it's filtering for provides false confidence — worse than no filter at all.
+
+For defense in depth, PIF can be combined with model-level safety features (system prompts, constitutional AI, etc.) that operate at a different layer. PIF handles the content before it enters context; the model's own guardrails handle what happens after.
+
 ## Quick Start
 
 ```bash
