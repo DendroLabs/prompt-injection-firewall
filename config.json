@@ -1,0 +1,7 @@
+{
+  "firecrawl_url": "http://localhost:3002",
+  "strict_mode": false,
+  "log_raw": true,
+  "quarantine_dir": "~/.pif/quarantine",
+  "trusted_domains": ["localhost", "127.0.0.1"]
+}
