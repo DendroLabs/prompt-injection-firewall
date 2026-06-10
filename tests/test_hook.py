@@ -69,6 +69,40 @@ class TestBashWebAccess(unittest.TestCase):
         ))
 
 
+class TestLocalhostExemption(unittest.TestCase):
+    """Localhost URLs should pass through the hook."""
+
+    def test_curl_localhost(self):
+        self.assertFalse(_check_bash_web_access(
+            'curl -s http://localhost:8080/health'
+        ))
+
+    def test_curl_127(self):
+        self.assertFalse(_check_bash_web_access(
+            'curl http://127.0.0.1:3000/api/v1'
+        ))
+
+    def test_curl_ipv6_loopback(self):
+        self.assertFalse(_check_bash_web_access(
+            'curl http://[::1]:8080/'
+        ))
+
+    def test_curl_external_still_blocked(self):
+        self.assertTrue(_check_bash_web_access(
+            'curl https://example.com'
+        ))
+
+    def test_mixed_localhost_and_external_blocked(self):
+        self.assertTrue(_check_bash_web_access(
+            'curl http://localhost:8080 && curl https://example.com'
+        ))
+
+    def test_localhost_https(self):
+        self.assertFalse(_check_bash_web_access(
+            'curl https://localhost:3000/health'
+        ))
+
+
 class TestExtractUrls(unittest.TestCase):
 
     def test_single_url(self):

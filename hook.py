@@ -17,12 +17,12 @@ BLOCKED_PREFIXES = ("mcp__firecrawl__",)
 import re
 
 BASH_WEB_COMMANDS = re.compile(
-    r'\b(curl|wget|httpie|python3?\s+-c\s+.*(?:urllib|requests|httpx|aiohttp))\b'
+    r'\b(curl|wget|https?(?!://)|python3?\s+-c\s+.*(?:urllib|requests|httpx|aiohttp))\b'
 )
 BASH_URL_PATTERN = re.compile(r'https?://')
 
 LOCALHOST_PATTERN = re.compile(
-    r'^https?://(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])(:\d+)?(/|$)'
+    r'^https?://(localhost|127\.0\.0\.1|\[::1\])(:\d+)?(/|$)'
 )
 
 CONFIG_PATH = Path.home() / ".pif" / "config.json"
@@ -58,7 +58,7 @@ def _check_bash_web_access(command):
         return False
     if not (BASH_WEB_COMMANDS.search(command) and BASH_URL_PATTERN.search(command)):
         return False
-    urls = re.findall(r'https?://[^\s"\'<>]+', command)
+    urls = _extract_urls_from_command(command)
     if urls and all(LOCALHOST_PATTERN.match(u) for u in urls):
         return False
     return True
