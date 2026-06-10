@@ -102,6 +102,16 @@ class TestLocalhostExemption(unittest.TestCase):
             'curl https://localhost:3000/health'
         ))
 
+    def test_curl_localhost_shell_variable_port(self):
+        self.assertFalse(_check_bash_web_access(
+            'for port in 3002 3000; do curl -s "http://localhost:$port/"; done'
+        ))
+
+    def test_curl_localhost_braced_variable_port(self):
+        self.assertFalse(_check_bash_web_access(
+            'curl "http://127.0.0.1:${PORT}/health"'
+        ))
+
 
 class TestExtractUrls(unittest.TestCase):
 
