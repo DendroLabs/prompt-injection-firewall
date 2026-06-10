@@ -73,6 +73,23 @@ pif log --watch     # Live tail
 pif audit <hash>    # Deep dive on a request
 ```
 
+## Claude Code Hook
+
+`hook.py` is a PreToolUse hook that closes the paths around PIF: it denies
+WebFetch, WebSearch, Firecrawl MCP tools, and Bash commands that fetch web
+content (curl, wget, HTTPie, python urllib/requests/httpx/aiohttp), directing
+the model to the pif_* tools instead.
+
+Exemptions:
+
+- **Loopback** — URLs targeting `localhost`, `127.0.0.1`, or `[::1]` always
+  pass, including ports written as unexpanded shell variables
+  (`http://localhost:$port/`, `http://127.0.0.1:${PORT}/`), since the hook
+  sees commands before shell expansion.
+- **Trusted domains** — hosts listed in `trusted_domains` in
+  `~/.pif/config.json` (and their subdomains) pass. For Bash commands, every
+  URL in the command must be trusted or the command is blocked.
+
 ## Sanitizer Categories
 
 | Severity | Category | Examples |
@@ -97,7 +114,7 @@ hook.py               Claude Code PreToolUse hook (blocks web tools + curl/wget 
 config.json           Default config template
 tests/
   test_sanitizer.py   82 sanitizer tests
-  test_hook.py        18 hook tests
+  test_hook.py        26 hook tests
   injection-test-page.html   Test page with embedded attacks
 ```
 
