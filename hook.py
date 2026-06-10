@@ -21,6 +21,8 @@ BASH_WEB_COMMANDS = re.compile(
 )
 BASH_URL_PATTERN = re.compile(r'https?://')
 
+# Port may be an unexpanded shell variable ($port / ${PORT}) — the hook sees
+# commands before shell expansion.
 LOCALHOST_PATTERN = re.compile(
     r'^https?://(localhost|127\.0\.0\.1|\[::1\])(:(\d+|\$\{?\w+\}?))?(/|$)'
 )
