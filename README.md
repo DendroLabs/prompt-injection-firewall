@@ -26,7 +26,8 @@ For defense in depth, PIF can be combined with model-level safety features (syst
 ## Quick Start
 
 ```bash
-cd ~/Documents/misc/web-quarantine
+git clone https://github.com/DendroLabs/prompt-injection-firewall.git
+cd prompt-injection-firewall
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
