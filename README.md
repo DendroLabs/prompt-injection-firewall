@@ -195,3 +195,7 @@ Quarantine logs at `~/.pif/quarantine/` (raw, clean, and JSON report per request
 ```bash
 python3 -m pytest tests/ -v
 ```
+
+## Disclaimer
+
+PIF is a defense-in-depth layer designed to reduce the risk of prompt injection from web content. It is **not a guarantee** against all prompt injection attacks. Novel or sufficiently sophisticated payloads may evade pattern-based detection. PIF should be used alongside — not as a replacement for — other security practices such as model-level safety features, input validation, and limiting the permissions and capabilities available to your LLM. Use at your own risk.
