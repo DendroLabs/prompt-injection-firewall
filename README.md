@@ -198,4 +198,4 @@ python3 -m pytest tests/ -v
 
 ## Disclaimer
 
-PIF is a defense-in-depth layer designed to reduce the risk of prompt injection from web content. It is **not a guarantee** against all prompt injection attacks. Novel or sufficiently sophisticated payloads may evade pattern-based detection. PIF should be used alongside — not as a replacement for — other security practices such as model-level safety features, input validation, and limiting the permissions and capabilities available to your LLM. Use at your own risk.
+PIF is designed to catch the passive prompt injection threats that come with web scraping — the injected payloads embedded in web pages, SEO spam, and user-generated content that try to hijack any LLM that happens to ingest them. It is **not a guarantee** against targeted or novel attacks, and sophisticated payloads may evade pattern-based detection. PIF should be used as one layer alongside other security practices, not as your only line of defense. Use at your own risk.
