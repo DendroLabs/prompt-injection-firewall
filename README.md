@@ -118,6 +118,55 @@ tests/
   injection-test-page.html   Test page with embedded attacks
 ```
 
+## Recommended Claude Code Settings
+
+To get the most out of PIF, configure Claude Code so the model uses PIF tools
+by default instead of attempting blocked tools first.
+
+### 1. Deny direct web tools
+
+In `~/.claude/settings.json`, move `WebSearch` and `WebFetch` to the deny list
+and allow PIF tools:
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "mcp__pif__*"
+    ],
+    "deny": [
+      "WebSearch",
+      "WebFetch"
+    ]
+  }
+}
+```
+
+This prevents the model from ever attempting the blocked tools, avoiding
+wasted calls that hit the hook and get denied.
+
+### 2. Add PIF instructions to CLAUDE.md
+
+Add this to your `~/.claude/CLAUDE.md` (global) or project-level `CLAUDE.md`
+so all sessions and subagents know to use PIF from the start:
+
+```markdown
+## Web Access — PIF Only
+
+All web access must go through PIF (Prompt Injection Firewall) MCP tools.
+WebSearch, WebFetch, and curl/wget are blocked by a PreToolUse hook —
+do not attempt them.
+
+- **pif_search** — web search (replaces WebSearch)
+- **pif_scrape** — JS-rendered page scrape (replaces WebFetch for rich pages)
+- **pif_fetch** — basic HTTP GET (replaces WebFetch/curl)
+
+Subagents performing web research MUST use these PIF tools directly.
+```
+
+Without these settings, the model will try WebSearch/curl first, get blocked
+by the hook, and sometimes give up instead of retrying with PIF tools.
+
 ## Config
 
 Runtime config at `~/.pif/config.json`:
